@@ -5,7 +5,7 @@ import {
   Maximize2, Crop, RefreshCw
 } from 'lucide-react';
 
-const DEFAULT_TMDB_KEY = ""; // Users can input TMDB API Key in app UI
+const DEFAULT_TMDB_KEY = ""; 
 
 const CATEGORIES = [
   { id: 'all', name: '🔥 Trending', endpoint: '/trending/movie/week' },
@@ -28,13 +28,11 @@ export default function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   
-  // Netflix Player Controls State
-  const [serverSource, setServerSource] = useState('server1'); // server1 = vidsrc.cc, server2 = vidsrc.me, server3 = 2embed
-  const [aspectMode, setAspectMode] = useState('contain'); // contain (fit), cover (crop/fill), fill
+  const [serverSource, setServerSource] = useState('server1');
+  const [aspectMode, setAspectMode] = useState('contain');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const playerRef = useRef(null);
 
-  // Persistence
   const [watchlist, setWatchlist] = useState(() => JSON.parse(localStorage.getItem('mozihub_watchlist') || '[]'));
 
   useEffect(() => {
@@ -58,7 +56,7 @@ export default function App() {
         setHeroMovie({
           id: `550`,
           title: 'Full Movie Stream Test',
-          overview: 'Click Watch Now to stream full movies with Netflix-style controls and multiple server sources.',
+          overview: 'Click Watch Now to stream full movies with Netflix-style controls.',
           backdrop: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&auto=format&fit=crop&q=60',
           rating: '9.0',
           year: '2025'
@@ -195,7 +193,6 @@ export default function App() {
       <main className="flex-1 overflow-y-auto pb-24">
         {activeTab === 'home' && (
           <div className="space-y-6">
-            {/* Category Selector Chips */}
             <div className="flex gap-2 overflow-x-auto no-scrollbar px-4 pt-3">
               {CATEGORIES.map(cat => (
                 <button
@@ -210,7 +207,6 @@ export default function App() {
               ))}
             </div>
 
-            {/* Hero Section */}
             {heroMovie && (
               <div className="relative h-96 w-full group">
                 <img src={heroMovie.backdrop} alt={heroMovie.title} className="w-full h-full object-cover" />
@@ -246,7 +242,6 @@ export default function App() {
               </div>
             )}
 
-            {/* Movies Catalog Grid */}
             <div className="px-4 space-y-4">
               <h2 className="text-base font-bold flex items-center justify-between">
                 <span>{activeCategory.name} Catalog</span>
@@ -354,7 +349,7 @@ export default function App() {
         )}
       </main>
 
-      {/* NETFLIX-STYLE STREAMING PLAYER OVERLAY WITH SANDBOX & ROTATE CONTROLS */}
+      {/* NETFLIX STREAMING PLAYER WITHOUT SANDBOX RESTRICTIONS */}
       {playingVideo && (
         <div ref={playerRef} className="fixed inset-0 z-50 bg-black flex flex-col justify-between">
           
@@ -369,15 +364,14 @@ export default function App() {
 
             <div className="text-center px-2">
               <h3 className="font-bold text-xs truncate max-w-[160px]">{playingVideo.title}</h3>
-              <p className="text-[9px] text-red-500 font-bold uppercase tracking-widest">MoziHub HD Player</p>
+              <p className="text-[9px] text-red-500 font-bold uppercase tracking-widest">MoziHub HD Stream</p>
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Aspect Ratio / Crop Switcher */}
+              {/* Aspect Ratio Switcher */}
               <button 
                 onClick={cycleAspectMode} 
                 className="p-1.5 bg-black/70 border border-gray-700 rounded-lg text-xs font-semibold text-gray-300 flex items-center gap-1"
-                title="Change Aspect Ratio (Fit / Crop)"
               >
                 <Crop className="w-3.5 h-3.5 text-red-500" />
                 <span className="uppercase text-[10px]">{aspectMode}</span>
@@ -389,20 +383,18 @@ export default function App() {
                 onChange={(e) => setServerSource(e.target.value)}
                 className="bg-black/80 border border-gray-700 text-[11px] px-2 py-1 rounded-lg text-gray-200 focus:outline-none"
               >
-                <option value="server1">S1 (Fast)</option>
-                <option value="server2">S2 (Backup)</option>
-                <option value="server3">S3 (HD)</option>
+                <option value="server1">Server 1 (Fast)</option>
+                <option value="server2">Server 2 (Backup)</option>
+                <option value="server3">Server 3 (HD)</option>
               </select>
             </div>
           </div>
 
-          {/* Embedded Full Video iFrame with Pop-up Blocking Sandbox */}
+          {/* Unrestricted Streaming Frame */}
           <div className="relative w-full h-full bg-black flex items-center justify-center overflow-hidden">
             <iframe 
               src={getStreamUrl(playingVideo.id, serverSource)} 
               title={playingVideo.title}
-              sandbox="allow-scripts allow-same-origin allow-forms"
-              style={{ objectFit: aspectMode }}
               className={`w-full h-full border-0 transition-all duration-300 ${
                 aspectMode === 'cover' ? 'scale-125 object-cover' : aspectMode === 'fill' ? 'scale-100 object-fill' : 'object-contain'
               }`}
@@ -414,7 +406,7 @@ export default function App() {
           {/* Bottom Bar Info & Fullscreen Rotate Control */}
           <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black via-black/80 to-transparent z-50 flex items-center justify-between text-xs text-gray-400">
             <span className="flex items-center gap-1.5 text-[11px]">
-              <Tv className="w-4 h-4 text-red-600" /> Auto Ad-Block Active
+              <Tv className="w-4 h-4 text-red-600" /> Full HD Streaming Mode
             </span>
             
             <button 
@@ -432,24 +424,4 @@ export default function App() {
         {[
           { id: 'home', label: 'Home', icon: Film },
           { id: 'search', label: 'Search', icon: Search },
-          { id: 'library', label: 'Watchlist', icon: Heart },
-          { id: 'profile', label: 'Settings', icon: User }
-        ].map((tab) => {
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-col items-center gap-1 text-[11px] font-medium transition ${
-                activeTab === tab.id ? 'text-red-600' : 'text-gray-500 hover:text-gray-300'
-              }`}
-            >
-              <Icon className="w-5 h-5" />
-              {tab.label}
-            </button>
-          );
-        })}
-      </nav>
-    </div>
-  );
-}
+          { id: 'l
